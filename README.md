@@ -18,3 +18,46 @@ Para ejecutar este backend de Spring Boot, utiliza el siguiente comando en la te
 2. Configura las variables de entorno en el archivo `.env` (ubicado en la raíz del proyecto)
 3. Ejecuta el comando de arriba
 4. La aplicación estará disponible en `http://localhost:8080`
+
+## 📚 API Endpoints
+
+### Base URL: `http://localhost:8080`
+
+| Método | Endpoint | Descripción | Respuesta |
+|--------|----------|-------------|-----------|
+| `GET` | `/users` | Obtener todos los usuarios | `200 OK` |
+| `GET` | `/users/{id}` | Obtener usuario por ID | `200 OK` / `404 Not Found` |
+| `POST` | `/users` | Crear nuevo usuario | `201 Created` |
+| `PUT` | `/users/{id}` | Actualizar usuario | `200 OK` / `404 Not Found` |
+| `DELETE` | `/users/{id}` | Eliminar usuario | `204 No Content` / `404 Not Found` |
+
+### Estructura del UserDTO:
+```json
+{
+  "id": 1,
+  "name": "Juan Pérez",
+  "email": "juan@example.com"
+}
+```
+
+### Ejemplos rápidos:
+```bash
+# Obtener todos los usuarios
+curl http://localhost:8080/users
+
+# Crear usuario
+curl -X POST http://localhost:8080/users \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Ana López","email":"ana@example.com"}'
+
+# Obtener usuario por ID
+curl http://localhost:8080/users/1
+
+# Actualizar usuario
+curl -X PUT http://localhost:8080/users/1 \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Ana López Updated","email":"ana.updated@example.com"}'
+
+# Eliminar usuario
+curl -X DELETE http://localhost:8080/users/1
+```
