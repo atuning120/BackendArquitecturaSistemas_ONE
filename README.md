@@ -48,7 +48,7 @@ curl http://localhost:8080/users
 # Crear usuario
 curl -X POST http://localhost:8080/users \
   -H "Content-Type: application/json" \
-  -d '{"name":"Ana López","email":"ana@example.com"}'
+  -d '{"name":"Ana López","email":"ana@example.com","password":"secret"}'
 
 # Obtener usuario por ID
 curl http://localhost:8080/users/1
@@ -56,7 +56,7 @@ curl http://localhost:8080/users/1
 # Actualizar usuario
 curl -X PUT http://localhost:8080/users/1 \
   -H "Content-Type: application/json" \
-  -d '{"name":"Ana López Updated","email":"ana.updated@example.com"}'
+  -d '{"name":"Ana López Updated","email":"ana.updated@example.com","password":"secret.update"}'
 
 # Eliminar usuario
 curl -X DELETE http://localhost:8080/users/1
