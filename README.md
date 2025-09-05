@@ -23,6 +23,15 @@ Para ejecutar este backend de Spring Boot, utiliza el siguiente comando en la te
 
 ### Base URL: `http://localhost:8080`
 
+#### 🔐 Autenticación
+
+| Método | Endpoint | Descripción | Respuesta |
+|--------|----------|-------------|-----------|
+| `POST` | `/auth/login` | Iniciar sesión | `200 OK` / `401 Unauthorized` |
+| `POST` | `/auth/register` | Registrar nuevo usuario | `201 Created` / `409 Conflict` |
+
+#### 👥 Usuarios
+
 | Método | Endpoint | Descripción | Respuesta |
 |--------|----------|-------------|-----------|
 | `GET` | `/users` | Obtener todos los usuarios | `200 OK` |
@@ -40,7 +49,43 @@ Para ejecutar este backend de Spring Boot, utiliza el siguiente comando en la te
 }
 ```
 
+### Estructura de Login:
+```json
+{
+  "email": "juan@example.com",
+  "password": "mi_contraseña"
+}
+```
+
+### Respuesta de Autenticación:
+```json
+{
+  "success": true,
+  "message": "Login exitoso",
+  "user": {
+    "id": 1,
+    "name": "Juan Pérez",
+    "email": "juan@example.com"
+  }
+}
+```
+
 ### Ejemplos rápidos:
+
+#### Autenticación:
+```bash
+# Registrar usuario
+curl -X POST http://localhost:8080/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Ana López","email":"ana@example.com","password":"secret123"}'
+
+# Iniciar sesión
+curl -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"ana@example.com","password":"secret123"}'
+```
+
+#### Gestión de usuarios:
 ```bash
 # Obtener todos los usuarios
 curl http://localhost:8080/users

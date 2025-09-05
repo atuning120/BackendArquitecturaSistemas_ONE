@@ -39,9 +39,9 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             User existingUser = optionalUser.get();
-            existingUser.setName(userDTO.name()); 
-            existingUser.setEmail(userDTO.email());
-            existingUser.setPassword(userDTO.password());
+            existingUser.setName(userDTO.getName()); 
+            existingUser.setEmail(userDTO.getEmail());
+            existingUser.setPassword(userDTO.getPassword());
 
             User updatedUser = userRepository.save(existingUser);
             return convertToDto(updatedUser);
@@ -56,6 +56,22 @@ public class UserService {
         }
         return false;
     }
+
+    // Nuevos métodos para autenticación
+    public UserDTO getUserByEmail(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        return userOptional.map(this::convertToDto).orElse(null);
+    }
+
+    public boolean verifyPassword(String email, String password) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            // En un entorno real, usarías BCrypt o similar para hash de contraseñas
+            return user.getPassword().equals(password);
+        }
+        return false;
+    }
     
     private UserDTO convertToDto(User user) {
         return new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getPassword());
@@ -63,9 +79,9 @@ public class UserService {
 
     private User convertToEntity(UserDTO userDTO) {
         User user = new User();
-        user.setName(userDTO.name());
-        user.setEmail(userDTO.email());
-        user.setPassword(userDTO.password());
+        user.setName(userDTO.getName());
+        user.setEmail(userDTO.getEmail());
+        user.setPassword(userDTO.getPassword());
         return user;
     }
 }
