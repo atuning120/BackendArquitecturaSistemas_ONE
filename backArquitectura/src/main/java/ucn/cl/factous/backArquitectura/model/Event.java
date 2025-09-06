@@ -1,10 +1,12 @@
 package ucn.cl.factous.backArquitectura.model;
 
-import java.util.Date;
+import java.sql.Timestamp;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -13,50 +15,76 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private Date date;
-    private String place;
+
+    private String eventName;
+
+    @ManyToOne
+    @JoinColumn(name = "organizer_id")
+    private User organizer;
+
+    @ManyToOne
+    @JoinColumn(name = "spot_id")
+    private Spot spot;
+
+    private Timestamp eventDate;
+    private String description;
     private String category;
+    private String imageUrl;
 
     public Event() {}
 
-    public Event(String name, Date date, String place, String category) {
-        this.name = name;
-        this.date = date;
-        this.place = place;
+    public Event(String eventName, User organizer, Spot spot, Timestamp eventDate, String description, String category, String imageUrl) {
+        this.eventName = eventName;
+        this.organizer = organizer;
+        this.spot = spot;
+        this.eventDate = eventDate;
+        this.description = description;
         this.category = category;
+        this.imageUrl = imageUrl;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getEventName() {
+        return eventName;
     }
 
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public Date getDate() {
-        return date;
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public User getOrganizer() {
+        return organizer;
     }
 
-    public String getPlace() {
-        return place;
+    public void setOrganizer(User organizer) {
+        this.organizer = organizer;
     }
 
-    public void setPlace(String place) {
-        this.place = place;
+    public Spot getSpot() {
+        return spot;
+    }
+
+    public void setSpot(Spot spot) {
+        this.spot = spot;
+    }
+
+    public Timestamp getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(Timestamp eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
     
     public String getCategory() {
@@ -66,15 +94,18 @@ public class Event {
     public void setCategory(String category) {
         this.category = category;
     }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
     
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     @Override
     public String toString() {
-        return "Event{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               ", date=" + date +
-               ", place='" + place + '\'' +
-               ", category='" + category + '\'' +
-               '}';
+        return "Event [id=" + id + ", organizer=" + organizer.toString() + ", eventName=" + eventName + ", spot=" + spot.toString() +
+               ", eventDate=" + eventDate + ", description=" + description + ", category=" + category + ", imageUrl=" + imageUrl + "]";
     }
 }
