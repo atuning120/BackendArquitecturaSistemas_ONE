@@ -1,4 +1,4 @@
-package ucn.cl.factous.backArquitectura.model;
+package ucn.cl.factous.backArquitectura.shared.entity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import ucn.cl.factous.backArquitectura.modules.user.entity.User;
 
 @Entity
 @Table(name = "sales")
@@ -30,7 +32,7 @@ public class Sale {
 
     public Sale() {}
 
-    public Sale(User buyer, String saleDate, Double amount) {;
+    public Sale(User buyer, String saleDate, Double amount) {
         this.buyer = buyer;
         this.saleDate = saleDate;
         this.amount = amount;

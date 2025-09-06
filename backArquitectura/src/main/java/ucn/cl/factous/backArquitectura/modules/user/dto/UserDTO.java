@@ -1,4 +1,4 @@
-package ucn.cl.factous.backArquitectura.dto;
+package ucn.cl.factous.backArquitectura.modules.user.dto;
 
 public class UserDTO {
     private Long id;

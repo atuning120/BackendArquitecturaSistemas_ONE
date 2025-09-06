@@ -1,4 +1,4 @@
-package ucn.cl.factous.backArquitectura.controller;
+package ucn.cl.factous.backArquitectura.modules.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ucn.cl.factous.backArquitectura.dto.AuthResponseDTO;
-import ucn.cl.factous.backArquitectura.dto.LoginDTO;
-import ucn.cl.factous.backArquitectura.dto.UserDTO;
-import ucn.cl.factous.backArquitectura.service.UserService;
+import ucn.cl.factous.backArquitectura.modules.auth.dto.AuthResponseDTO;
+import ucn.cl.factous.backArquitectura.modules.auth.dto.LoginDTO;
+import ucn.cl.factous.backArquitectura.modules.user.dto.UserDTO;
+import ucn.cl.factous.backArquitectura.modules.user.service.UserService;
 
 @RestController
 @RequestMapping("/auth")

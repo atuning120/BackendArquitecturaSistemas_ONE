@@ -1,4 +1,4 @@
-package ucn.cl.factous.backArquitectura.service;
+package ucn.cl.factous.backArquitectura.modules.user.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ucn.cl.factous.backArquitectura.dto.UserDTO;
-import ucn.cl.factous.backArquitectura.model.User;
-import ucn.cl.factous.backArquitectura.repository.UserRepository;
+import ucn.cl.factous.backArquitectura.modules.user.dto.UserDTO;
+import ucn.cl.factous.backArquitectura.modules.user.entity.User;
+import ucn.cl.factous.backArquitectura.modules.user.repository.UserRepository;
 
 @Service
 public class UserService {

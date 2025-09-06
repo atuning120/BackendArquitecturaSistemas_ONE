@@ -1,4 +1,6 @@
-package ucn.cl.factous.backArquitectura.dto;
+package ucn.cl.factous.backArquitectura.modules.auth.dto;
+
+import ucn.cl.factous.backArquitectura.modules.user.dto.UserDTO;
 
 public class AuthResponseDTO {
     private boolean success;

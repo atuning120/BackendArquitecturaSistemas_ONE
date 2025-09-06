@@ -1,4 +1,4 @@
-package ucn.cl.factous.backArquitectura.model;
+package ucn.cl.factous.backArquitectura.shared.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,6 +7,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import ucn.cl.factous.backArquitectura.modules.user.entity.User;
 
 @Entity
 @Table(name = "spots")

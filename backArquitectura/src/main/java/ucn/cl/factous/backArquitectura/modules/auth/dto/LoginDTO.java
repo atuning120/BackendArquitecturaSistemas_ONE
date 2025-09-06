@@ -1,4 +1,4 @@
-package ucn.cl.factous.backArquitectura.dto;
+package ucn.cl.factous.backArquitectura.modules.auth.dto;
 
 public class LoginDTO {
     private String email;

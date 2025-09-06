@@ -1,4 +1,4 @@
-package ucn.cl.factous.backArquitectura.model;
+package ucn.cl.factous.backArquitectura.modules.event.entity;
 
 import java.sql.Timestamp;
 import jakarta.persistence.Entity;
@@ -8,6 +8,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import ucn.cl.factous.backArquitectura.modules.user.entity.User;
+import ucn.cl.factous.backArquitectura.shared.entity.Spot;
 
 @Entity
 @Table(name = "events")

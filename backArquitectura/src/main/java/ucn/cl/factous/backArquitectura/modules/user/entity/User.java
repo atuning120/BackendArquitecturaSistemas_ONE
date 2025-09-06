@@ -1,4 +1,4 @@
-package ucn.cl.factous.backArquitectura.model;
+package ucn.cl.factous.backArquitectura.modules.user.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
