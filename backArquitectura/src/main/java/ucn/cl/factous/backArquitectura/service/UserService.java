@@ -42,6 +42,10 @@ public class UserService {
             existingUser.setName(userDTO.getName()); 
             existingUser.setEmail(userDTO.getEmail());
             existingUser.setPassword(userDTO.getPassword());
+            // Actualizar el rol si se proporciona
+            if (userDTO.getRole() != null) {
+                existingUser.setRole(userDTO.getRole());
+            }
 
             User updatedUser = userRepository.save(existingUser);
             return convertToDto(updatedUser);
@@ -74,7 +78,7 @@ public class UserService {
     }
     
     private UserDTO convertToDto(User user) {
-        return new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getPassword());
+        return new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getPassword(), user.getRole());
     }
 
     private User convertToEntity(UserDTO userDTO) {
@@ -82,6 +86,10 @@ public class UserService {
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
         user.setPassword(userDTO.getPassword());
+        // Mapear role del DTO al campo role de la entidad
+        if (userDTO.getRole() != null) {
+            user.setRole(userDTO.getRole());
+        }
         return user;
     }
 }

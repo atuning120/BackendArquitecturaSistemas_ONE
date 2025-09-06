@@ -40,6 +40,7 @@ public class AuthController {
                 safeUser.setId(user.getId());
                 safeUser.setName(user.getName());
                 safeUser.setEmail(user.getEmail());
+                safeUser.setRole(user.getRole()); 
                 // No establecer password para seguridad
                 
                 return ResponseEntity.ok(new AuthResponseDTO(true, "Login exitoso", safeUser));
@@ -72,6 +73,7 @@ public class AuthController {
             safeUser.setId(newUser.getId());
             safeUser.setName(newUser.getName());
             safeUser.setEmail(newUser.getEmail());
+            safeUser.setRole(newUser.getRole()); // Usar 'role' en vez de 'accountType'
             
             return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new AuthResponseDTO(true, "Usuario registrado exitosamente", safeUser));
