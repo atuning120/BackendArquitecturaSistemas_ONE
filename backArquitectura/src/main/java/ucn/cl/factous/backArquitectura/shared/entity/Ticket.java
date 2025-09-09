@@ -65,6 +65,14 @@ public class Ticket {
 
     public void setuser(User user) {
         this.user = user;
+    }
+
+    public Sale getSale() {
+        return sale;
+    }
+
+    public void setSale(Sale sale) {
+        this.sale = sale;
     }   
 
     @Override

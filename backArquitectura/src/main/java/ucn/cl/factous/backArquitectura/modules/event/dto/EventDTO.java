@@ -11,9 +11,13 @@ public class EventDTO {
     private String description;
     private String category;
     private String imageUrl;
+    private Double ticketPrice;
+    private Integer capacity;
 
     // Constructor
-    public EventDTO(Long id, String eventName, String description, Long organizerId, Long spotId, Date eventDate, String category, String imageUrl) {
+    public EventDTO() {}
+
+    public EventDTO(Long id, String eventName, String description, Long organizerId, Long spotId, Date eventDate, String category, String imageUrl, Double ticketPrice, Integer capacity) {
         this.id = id;
         this.eventName = eventName;
         this.description = description;
@@ -22,6 +26,8 @@ public class EventDTO {
         this.eventDate = eventDate;
         this.category = category;
         this.imageUrl = imageUrl;
+        this.ticketPrice = ticketPrice;
+        this.capacity = capacity;
     }
 
     // Getters y Setters
@@ -96,6 +102,26 @@ public class EventDTO {
     public void setImageUrl(String imageUrl) {
         if (imageUrl != null && !imageUrl.trim().isEmpty()) {
             this.imageUrl = imageUrl;
+        }
+    }
+
+    public Double getTicketPrice() {
+        return ticketPrice;
+    }
+
+    public void setTicketPrice(Double ticketPrice) {
+        if (ticketPrice != null && ticketPrice >= 0) {
+            this.ticketPrice = ticketPrice;
+        }
+    }
+
+    public Integer getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(Integer capacity) {
+        if (capacity != null && capacity > 0) {
+            this.capacity = capacity;
         }
     }
 }

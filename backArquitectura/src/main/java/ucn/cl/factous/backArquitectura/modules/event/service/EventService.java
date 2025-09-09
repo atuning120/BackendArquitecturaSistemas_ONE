@@ -48,7 +48,7 @@ public class EventService {
             throw new IllegalArgumentException("Spot con ID " + eventDTO.getSpotId() + " no existe.");
         }
 
-        Event convertedEvent = new Event(eventDTO.getEventName(), foundedOrganizer, foundedSpot, eventDTO.getEventDate(), eventDTO.getDescription(), eventDTO.getCategory(), eventDTO.getImageUrl());
+        Event convertedEvent = new Event(eventDTO.getEventName(), foundedOrganizer, foundedSpot, eventDTO.getEventDate(), eventDTO.getDescription(), eventDTO.getCategory(), eventDTO.getImageUrl(), eventDTO.getTicketPrice(), eventDTO.getCapacity());
         Event savedEvent = eventRepository.save(convertedEvent);
         return convertToDto(savedEvent);
     }
@@ -64,6 +64,8 @@ public class EventService {
             existingEvent.setDescription(eventDTO.getDescription());
             existingEvent.setCategory(eventDTO.getCategory());
             existingEvent.setImageUrl(eventDTO.getImageUrl());
+            existingEvent.setTicketPrice(eventDTO.getTicketPrice());
+            existingEvent.setCapacity(eventDTO.getCapacity());
             Event updatedEvent = eventRepository.save(existingEvent);
             return convertToDto(updatedEvent);
         }
@@ -77,6 +79,21 @@ public class EventService {
         }
         return false;
     }
+
+    // Métodos específicos para diferentes tipos de usuario
+    public List<EventDTO> getEventsByOrganizer(Long organizerId) {
+        return eventRepository.findByOrganizerId(organizerId)
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<EventDTO> getEventsBySpot(Long spotId) {
+        return eventRepository.findBySpotId(spotId)
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
     
     private EventDTO convertToDto(Event event) {
         return new EventDTO(
@@ -87,7 +104,9 @@ public class EventService {
             event.getSpot().getId(),
             event.getEventDate(),
             event.getCategory(),
-            event.getImageUrl()
+            event.getImageUrl(),
+            event.getTicketPrice(),
+            event.getCapacity()
         );
     }
 

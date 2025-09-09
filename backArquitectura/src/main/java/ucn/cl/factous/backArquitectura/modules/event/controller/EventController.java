@@ -66,4 +66,16 @@ public class EventController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    // Endpoints específicos para organizadores
+    @GetMapping("/organizer/{organizerId}")
+    public List<EventDTO> getEventsByOrganizer(@PathVariable Long organizerId) {
+        return eventService.getEventsByOrganizer(organizerId);
+    }
+
+    // Endpoints específicos para propietarios de spots
+    @GetMapping("/spot/{spotId}")
+    public List<EventDTO> getEventsBySpot(@PathVariable Long spotId) {
+        return eventService.getEventsBySpot(spotId);
+    }
 }

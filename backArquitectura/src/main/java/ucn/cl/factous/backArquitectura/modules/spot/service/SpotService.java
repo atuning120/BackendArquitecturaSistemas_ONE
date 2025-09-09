@@ -65,6 +65,14 @@ public class SpotService {
         return false;
     }
 
+    // Métodos específicos para propietarios
+    public List<SpotDTO> getSpotsByOwner(Long ownerId) {
+        return spotRepository.findByOwnerId(ownerId)
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
     private SpotDTO convertToDto(Spot spot) {
         return new SpotDTO(spot.getId(), spot.getName(), spot.getOwner().getId(), spot.getLocation());
     }

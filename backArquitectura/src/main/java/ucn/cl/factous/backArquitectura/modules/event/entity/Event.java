@@ -33,10 +33,12 @@ public class Event {
     private String description;
     private String category;
     private String imageUrl;
+    private Double ticketPrice;
+    private Integer capacity;
 
     public Event() {}
 
-    public Event(String eventName, User organizer, Spot spot, Date eventDate, String description, String category, String imageUrl) {
+    public Event(String eventName, User organizer, Spot spot, Date eventDate, String description, String category, String imageUrl, Double ticketPrice, Integer capacity) {
         this.eventName = eventName;
         this.organizer = organizer;
         this.spot = spot;
@@ -44,6 +46,8 @@ public class Event {
         this.description = description;
         this.category = category;
         this.imageUrl = imageUrl;
+        this.ticketPrice = ticketPrice;
+        this.capacity = capacity;
     }
 
     public Long getId() {
@@ -120,9 +124,30 @@ public class Event {
         }
     }
 
+    public Double getTicketPrice() {
+        return ticketPrice;
+    }
+
+    public void setTicketPrice(Double ticketPrice) {
+        if (ticketPrice != null && ticketPrice >= 0) {
+            this.ticketPrice = ticketPrice;
+        }
+    }
+
+    public Integer getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(Integer capacity) {
+        if (capacity != null && capacity > 0) {
+            this.capacity = capacity;
+        }
+    }
+
     @Override
     public String toString() {
         return "Event [id=" + id + ", organizer=" + organizer.toString() + ", eventName=" + eventName + ", spot=" + spot.toString() +
-               ", eventDate=" + eventDate + ", description=" + description + ", category=" + category + ", imageUrl=" + imageUrl + "]";
+               ", eventDate=" + eventDate + ", description=" + description + ", category=" + category + ", imageUrl=" + imageUrl + 
+               ", ticketPrice=" + ticketPrice + ", capacity=" + capacity + "]";
     }
 }

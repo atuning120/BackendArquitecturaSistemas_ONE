@@ -66,4 +66,10 @@ public class SpotController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    // Endpoints específicos para propietarios
+    @GetMapping("/owner/{ownerId}")
+    public List<SpotDTO> getSpotsByOwner(@PathVariable Long ownerId) {
+        return spotService.getSpotsByOwner(ownerId);
+    }
 }
