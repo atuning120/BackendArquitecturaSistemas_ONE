@@ -1,4 +1,4 @@
-package ucn.cl.factous.backArquitectura.modules.ticket.entity;
+package ucn.cl.factous.backArquitectura.shared.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,7 +10,6 @@ import jakarta.persistence.Table;
 
 import ucn.cl.factous.backArquitectura.modules.user.entity.User;
 import ucn.cl.factous.backArquitectura.modules.event.entity.Event;
-import ucn.cl.factous.backArquitectura.modules.sale.entity.Sale;
 
 @Entity
 @Table(name = "tickets")
@@ -34,11 +33,10 @@ public class Ticket {
 
     public Ticket() {}
 
-    public Ticket(Double price, Event event, User user, Sale sale) {
+    public Ticket(Double price, Event event, User user) {
         this.price = price;
         this.event = event;
         this.user = user;
-        this.sale = sale;
     }
 
     public Long getId() {
@@ -61,11 +59,11 @@ public class Ticket {
         this.event = event;
     }
 
-    public User getUser() {
+    public User getuser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setuser(User user) {
         this.user = user;
     }
 
@@ -77,14 +75,6 @@ public class Ticket {
         this.sale = sale;
     }   
 
-    public Sale getSale() {
-        return sale;
-    }
-
-    public void setSale(Sale sale) {
-        this.sale = sale;
-    }
-    
     @Override
     public String toString() {
         return "Ticket [id=" + id + ", price=" + price + ", event=" + event.toString() + ", user=" + user.toString() + "]";
