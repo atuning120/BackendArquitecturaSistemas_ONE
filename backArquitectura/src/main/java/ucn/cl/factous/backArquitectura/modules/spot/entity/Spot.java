@@ -1,4 +1,4 @@
-package ucn.cl.factous.backArquitectura.shared.entity;
+package ucn.cl.factous.backArquitectura.modules.spot.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

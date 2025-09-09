@@ -1,6 +1,7 @@
 package ucn.cl.factous.backArquitectura.modules.event.entity;
 
-import java.sql.Timestamp;
+import java.util.Date;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,9 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
+import ucn.cl.factous.backArquitectura.modules.spot.entity.Spot;
 import ucn.cl.factous.backArquitectura.modules.user.entity.User;
-import ucn.cl.factous.backArquitectura.shared.entity.Spot;
 
 @Entity
 @Table(name = "events")
@@ -29,14 +29,14 @@ public class Event {
     @JoinColumn(name = "spot_id")
     private Spot spot;
 
-    private Timestamp eventDate;
+    private Date eventDate;
     private String description;
     private String category;
     private String imageUrl;
 
     public Event() {}
 
-    public Event(String eventName, User organizer, Spot spot, Timestamp eventDate, String description, String category, String imageUrl) {
+    public Event(String eventName, User organizer, Spot spot, Date eventDate, String description, String category, String imageUrl) {
         this.eventName = eventName;
         this.organizer = organizer;
         this.spot = spot;
@@ -55,7 +55,9 @@ public class Event {
     }
 
     public void setEventName(String eventName) {
-        this.eventName = eventName;
+        if (eventName != null && !eventName.trim().isEmpty()) {
+            this.eventName = eventName;
+        }
     }
 
     public User getOrganizer() {
@@ -63,7 +65,9 @@ public class Event {
     }
 
     public void setOrganizer(User organizer) {
-        this.organizer = organizer;
+        if (organizer != null) {
+            this.organizer = organizer;
+        }
     }
 
     public Spot getSpot() {
@@ -71,15 +75,19 @@ public class Event {
     }
 
     public void setSpot(Spot spot) {
-        this.spot = spot;
+        if (spot != null) {
+            this.spot = spot;
+        }
     }
 
-    public Timestamp getEventDate() {
+    public Date getEventDate() {
         return eventDate;
     }
 
-    public void setEventDate(Timestamp eventDate) {
-        this.eventDate = eventDate;
+    public void setEventDate(Date eventDate) {
+        if (eventDate != null) {
+            this.eventDate = eventDate;
+        }
     }
 
     public String getDescription() {
@@ -87,7 +95,9 @@ public class Event {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        if (description != null && !description.trim().isEmpty()) {
+            this.description = description;
+        }
     }
     
     public String getCategory() {
@@ -95,7 +105,9 @@ public class Event {
     }
 
     public void setCategory(String category) {
-        this.category = category;
+        if (category != null && !category.trim().isEmpty()) {
+            this.category = category;
+        }
     }
 
     public String getImageUrl() {
@@ -103,7 +115,9 @@ public class Event {
     }
     
     public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+        if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+            this.imageUrl = imageUrl;
+        }
     }
 
     @Override

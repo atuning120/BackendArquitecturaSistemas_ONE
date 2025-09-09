@@ -1,4 +1,4 @@
-package ucn.cl.factous.backArquitectura.modules.user.controller;
+package ucn.cl.factous.backArquitectura.modules.event.controller;
 
 import java.util.List;
 
@@ -15,51 +15,51 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ucn.cl.factous.backArquitectura.modules.user.dto.UserDTO;
-import ucn.cl.factous.backArquitectura.modules.user.service.UserService;
+import ucn.cl.factous.backArquitectura.modules.event.dto.EventDTO;
+import ucn.cl.factous.backArquitectura.modules.event.service.EventService;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/events")
 @CrossOrigin(origins = {"${FRONT_URI}", "${FRONT_URI_ALTERNATIVE}"})
-public class UserController {
+public class EventController {
 
     @Autowired
-    private UserService userService;
+    private EventService eventService;
 
     @GetMapping
-    public List<UserDTO> getAllUsers() {
-        return userService.getAllUsers();
+    public List<EventDTO> getAllEvents() {
+        return eventService.getAllEvents();
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
-        UserDTO userDTO = userService.getUserById(id);
-        if (userDTO != null) {
-            return ResponseEntity.ok(userDTO); // Código 200 OK
+    public ResponseEntity<EventDTO> getEventById(@PathVariable Long id) {
+        EventDTO eventDTO = eventService.getEventById(id);
+        if (eventDTO != null) {;
+            return ResponseEntity.ok(eventDTO); // Código 200 OK
         } else {
             return ResponseEntity.notFound().build(); // Código 404 Not Found
         }
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
-        UserDTO createdUser = userService.createUser(userDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser); // Código 201 Created
+    public ResponseEntity<EventDTO> createEvent(@RequestBody EventDTO eventDTO) {
+        EventDTO createdEvent = eventService.createEvent(eventDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent); // Código 201 Created
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
-        UserDTO updatedUser = userService.updateUser(id, userDTO);
-        if (updatedUser != null) {
-            return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<EventDTO> updateEvent(@PathVariable Long id, @RequestBody EventDTO eventDTO) {
+        EventDTO updatedEvent = eventService.updateEvent(id, eventDTO);
+        if (updatedEvent != null) {
+            return ResponseEntity.ok(updatedEvent);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        boolean isDeleted = userService.deleteUser(id);
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
+        boolean isDeleted = eventService.deleteEvent(id);
         if (isDeleted) {
             return ResponseEntity.noContent().build();
         } else {

@@ -1,6 +1,5 @@
 package ucn.cl.factous.backArquitectura.shared.entity;
 
-import java.util.Arrays;
 import java.util.List;
 
 import jakarta.persistence.Entity;
