@@ -1,5 +1,6 @@
-package ucn.cl.factous.backArquitectura.shared.entity;
+package ucn.cl.factous.backArquitectura.modules.sale.entity;
 
+import java.util.Date;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -10,7 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
+import ucn.cl.factous.backArquitectura.modules.ticket.entity.Ticket;
 import ucn.cl.factous.backArquitectura.modules.user.entity.User;
 
 @Entity
@@ -26,12 +27,12 @@ public class Sale {
     @ManyToOne
     @JoinColumn(name = "buyer_id")
     private User buyer;
-    private String saleDate;
+    private Date saleDate;
     private Double amount;
 
     public Sale() {}
 
-    public Sale(User buyer, String saleDate, Double amount) {
+    public Sale(User buyer, Date saleDate, Double amount) {
         this.buyer = buyer;
         this.saleDate = saleDate;
         this.amount = amount;
@@ -57,11 +58,11 @@ public class Sale {
         this.buyer = buyer;
     }
 
-    public String getSaleDate() {
+    public Date getSaleDate() {
         return saleDate;
     }
 
-    public void setSaleDate(String saleDate) {
+    public void setSaleDate(Date saleDate) {
         this.saleDate = saleDate;
     }
 
@@ -71,6 +72,18 @@ public class Sale {
 
     public void setAmount(Double amount) {
         this.amount = amount;
+    }
+
+    public void addTicket(Ticket ticket) {
+        this.tickets.add(ticket);
+        this.amount += ticket.getPrice();
+        ticket.setSale(this);
+    }
+
+    public void removeTicket(Ticket ticket) {
+        this.tickets.remove(ticket);
+        this.amount -= ticket.getPrice();
+        ticket.setSale(null);
     }
 
     @Override
