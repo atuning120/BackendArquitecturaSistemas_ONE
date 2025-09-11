@@ -10,10 +10,11 @@ public class TicketDTO {
     // Información adicional del evento para mostrar al usuario
     private String eventName;
     private String eventDate;
+    private String qrCode;
 
     public TicketDTO() {}
 
-    public TicketDTO(Long id, Double price, Long eventId, Long userId, Long saleId, String eventName, String eventDate) {
+    public TicketDTO(Long id, Double price, Long eventId, Long userId, Long saleId, String eventName, String eventDate, String qrCode) {
         this.id = id;
         this.price = price;
         this.eventId = eventId;
@@ -21,6 +22,7 @@ public class TicketDTO {
         this.saleId = saleId;
         this.eventName = eventName;
         this.eventDate = eventDate;
+        this.qrCode = qrCode;
     }
 
     // Getters y Setters
@@ -78,5 +80,13 @@ public class TicketDTO {
 
     public void setEventDate(String eventDate) {
         this.eventDate = eventDate;
+    }
+
+    public String getQrCode() {
+        return qrCode;
+    }
+
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
     }
 }
