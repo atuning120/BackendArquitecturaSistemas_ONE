@@ -56,9 +56,9 @@ public class MercadoPagoController {
             }
 
             // Construir URLs de retorno
-            String successUrl = normalizedFrontUri + "/payment-success";
-            String pendingUrl = normalizedFrontUri + "/payment-pending";
-            String failureUrl = normalizedFrontUri + "/payment-failure";
+            String successUrl = normalizedFrontUri + "/available-events";
+            String pendingUrl = normalizedFrontUri + "/available-events";
+            String failureUrl = normalizedFrontUri + "/available-events";
 
             System.out.println("URLs de retorno configuradas:");
             System.out.println("Success: " + successUrl);
@@ -117,8 +117,7 @@ public class MercadoPagoController {
             PreferenceClient client = new PreferenceClient();
             Preference preference = client.create(preferenceRequest);
 
-            // Retornar URL de checkout en sandbox
-            return preference.getSandboxInitPoint();
+            return preference.getId();  // Devolver solo el preferenceId
 
         } catch (MPApiException apiException) {
             System.err.println("MercadoPago API Error: " + apiException.getApiResponse().getContent());
