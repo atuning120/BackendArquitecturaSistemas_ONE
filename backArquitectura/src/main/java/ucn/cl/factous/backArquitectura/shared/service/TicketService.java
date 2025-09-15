@@ -21,6 +21,7 @@ import ucn.cl.factous.backArquitectura.shared.entity.Ticket;
 import ucn.cl.factous.backArquitectura.shared.repository.SaleRepository;
 import ucn.cl.factous.backArquitectura.shared.repository.TicketRepository;
 
+// Este es un service para la lógica de tickets.
 @Service
 public class TicketService {
 
