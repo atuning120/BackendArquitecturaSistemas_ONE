@@ -1,7 +1,7 @@
 # Dockerfile multietapa para Spring Boot con Maven
 
 # Etapa 1: Build
-FROM maven:3.9.9-openjdk-17-slim AS build
+FROM maven:3.9-openjdk-17-slim AS build
 
 # Establecer directorio de trabajo
 WORKDIR /app
