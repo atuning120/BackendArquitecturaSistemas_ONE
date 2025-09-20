@@ -49,7 +49,7 @@ Render Web Service (Backend) ──────► PostgreSQL Database (Render)
   ```
 - **Start Command**: 
   ```bash
-  docker run -p $PORT:$PORT -e PORT=$PORT -e DATABASE_URL=$DATABASE_URL -e FRONTEND_URL=$FRONTEND_URL -e MERCADOPAGO_ACCESS_TOKEN=$MERCADOPAGO_ACCESS_TOKEN -e MERCADOPAGO_PUBLIC_KEY=$MERCADOPAGO_PUBLIC_KEY backend
+  docker run -p $PORT:$PORT -e PORT=$PORT -e DATABASE_URL=$DATABASE_URL -e FRONTEND_URL=$FRONTEND_URL -e MERCADOPAGO_ACCESS_TOKEN=$MERCADOPAGO_ACCESS_TOKEN backend
   ```
 
 ### 3. Configurar Variables de Entorno
@@ -61,10 +61,11 @@ En la sección **"Environment"** del Web Service, agrega:
 | `SPRING_PROFILES_ACTIVE` | `render` | Activa el perfil de Render |
 | `DATABASE_URL` | *[URL de tu PostgreSQL]* | URL completa de la BD |
 | `FRONTEND_URL` | `https://tu-frontend.onrender.com` | URL de tu frontend |
-| `MERCADOPAGO_ACCESS_TOKEN` | *[Tu token real]* | Token de producción |
-| `MERCADOPAGO_PUBLIC_KEY` | *[Tu clave pública]* | Clave pública real |
+| `MERCADOPAGO_ACCESS_TOKEN` | *[Tu token real]* | Token de acceso (backend) |
 
-> **⚠️ Importante**: Render proporciona automáticamente `PORT` y puede proporcionar `DATABASE_URL` si vinculas la BD.
+> **⚠️ Importante**: 
+> - Render proporciona automáticamente `PORT` y puede proporcionar `DATABASE_URL` si vinculas la BD.
+> - El **PUBLIC_KEY** de MercadoPago va en el **frontend**, no en el backend.
 
 ### 4. Vinculación Automática de Base de Datos
 
@@ -104,9 +105,8 @@ spring.datasource.url=${DATABASE_URL}
 # CORS para frontend
 cors.allowed-origins=${FRONTEND_URL:http://localhost:3000}
 
-# MercadoPago
+# MercadoPago (solo access token para backend)
 mercadopago.access-token=${MERCADOPAGO_ACCESS_TOKEN}
-mercadopago.public-key=${MERCADOPAGO_PUBLIC_KEY}
 ```
 
 ## 🧪 Testing Local con Configuración de Render
@@ -119,7 +119,6 @@ PORT=8080
 DATABASE_URL=postgresql://user:password@localhost:5432/db_name
 FRONTEND_URL=http://localhost:3000
 MERCADOPAGO_ACCESS_TOKEN=tu_token_test
-MERCADOPAGO_PUBLIC_KEY=tu_clave_test
 
 # 2. Ejecuta solo el backend
 docker-compose up backend
@@ -150,7 +149,7 @@ curl https://tu-backend.onrender.com/actuator/health
 ### Error: "Application failed to start"
 ```bash
 # Verificar variables de entorno en Render dashboard
-# Especialmente DATABASE_URL y MERCADOPAGO_*
+# Especialmente DATABASE_URL y MERCADOPAGO_ACCESS_TOKEN
 ```
 
 ### Error: "Connection refused to database"

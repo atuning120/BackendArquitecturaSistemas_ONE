@@ -30,17 +30,16 @@ public class MercadoPagoController {
     @PostMapping("/create-preference")
     public String createPaymentPreference(@RequestBody PaymentPreferenceDTO paymentData) {
         try {
-            // Cargar variables de entorno desde el archivo .env
-            Dotenv dotenv = Dotenv.load();
-            String accessToken = dotenv.get("TEST_ACCESS_TOKEN");
-            String frontUri = dotenv.get("FRONT_URI");
+            // Cargar variables de entorno (desde sistema o .env si existe)
+            String accessToken = getEnvironmentVariable("TEST_ACCESS_TOKEN", "MERCADOPAGO_ACCESS_TOKEN");
+            String frontUri = getEnvironmentVariable("FRONT_URI", "FRONTEND_URL");
 
             if (accessToken == null || accessToken.isEmpty()) {
-                return "Error: TEST_ACCESS_TOKEN no está configurado en el archivo .env";
+                return "Error: ACCESS_TOKEN no está configurado";
             }
 
             if (frontUri == null || frontUri.isEmpty()) {
-                return "Error: FRONT_URI no está configurado en el archivo .env";
+                return "Error: FRONTEND_URL no está configurado";
             }
 
             // Configurar credencial
@@ -129,6 +128,42 @@ public class MercadoPagoController {
             System.err.println("Unexpected Error: " + e.getMessage());
             e.printStackTrace();
             return "Error creating payment preference: " + e.getMessage();
+        }
+    }
+
+    /**
+     * Método helper para obtener variables de entorno
+     * Intenta obtener de variables del sistema primero, luego de .env si existe
+     */
+    private String getEnvironmentVariable(String devName, String prodName) {
+        // Primero intentar variables de entorno del sistema (producción)
+        String value = System.getenv(prodName);
+        if (value != null && !value.isEmpty()) {
+            return value;
+        }
+        
+        value = System.getenv(devName);
+        if (value != null && !value.isEmpty()) {
+            return value;
+        }
+        
+        // Si no están en el sistema, intentar cargar desde .env (desarrollo)
+        try {
+            Dotenv dotenv = Dotenv.configure()
+                .ignoreIfMalformed()
+                .ignoreIfMissing()
+                .load();
+            
+            value = dotenv.get(prodName);
+            if (value != null && !value.isEmpty()) {
+                return value;
+            }
+            
+            return dotenv.get(devName);
+        } catch (Exception e) {
+            // Si no se puede cargar .env, simplemente retornar null
+            System.out.println("No se pudo cargar archivo .env: " + e.getMessage());
+            return null;
         }
     }
 }

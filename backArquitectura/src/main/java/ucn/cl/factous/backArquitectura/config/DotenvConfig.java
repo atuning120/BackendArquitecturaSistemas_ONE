@@ -10,14 +10,26 @@ public class DotenvConfig {
 
     @PostConstruct
     public void loadEnv() {
-        Dotenv dotenv = Dotenv.configure()
-                .directory("./")
-                .ignoreIfMalformed()
-                .ignoreIfMissing()
-                .load();
+        try {
+            Dotenv dotenv = Dotenv.configure()
+                    .directory("./")
+                    .ignoreIfMalformed()
+                    .ignoreIfMissing()  // No fallar si no existe el archivo
+                    .load();
 
-        dotenv.entries().forEach(entry -> {
-            System.setProperty(entry.getKey(), entry.getValue());
-        });
+            // Solo cargar las variables si el archivo .env existe
+            if (dotenv != null) {
+                dotenv.entries().forEach(entry -> {
+                    // Solo establecer si no existe ya como variable de entorno del sistema
+                    if (System.getenv(entry.getKey()) == null) {
+                        System.setProperty(entry.getKey(), entry.getValue());
+                    }
+                });
+                System.out.println("Archivo .env cargado exitosamente");
+            }
+        } catch (Exception e) {
+            // En producción (Render), es normal que no exista .env
+            System.out.println("No se encontró archivo .env - usando variables de entorno del sistema");
+        }
     }
 }

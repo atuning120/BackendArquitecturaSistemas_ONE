@@ -18,9 +18,9 @@ if not exist backArquitectura\.env (
     echo 📝 Por favor, edita backArquitectura\.env con tus credenciales reales antes de continuar.
     echo Especialmente para producción en Render:
     echo   - DATABASE_URL (URL completa de PostgreSQL de Render)
-    echo   - MERCADOPAGO_ACCESS_TOKEN
-    echo   - MERCADOPAGO_PUBLIC_KEY
+    echo   - MERCADOPAGO_ACCESS_TOKEN (solo backend)
     echo   - FRONTEND_URL (URL de tu frontend en Render)
+    echo   - Nota: PUBLIC_KEY va en el frontend, no en el backend
     pause
 )
 

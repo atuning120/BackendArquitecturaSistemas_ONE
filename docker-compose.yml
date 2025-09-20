@@ -15,7 +15,6 @@ services:
       DATABASE_URL: ${DATABASE_URL:-jdbc:postgresql://localhost:5432/testdb}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
       MERCADOPAGO_ACCESS_TOKEN: ${MERCADOPAGO_ACCESS_TOKEN}
-      MERCADOPAGO_PUBLIC_KEY: ${MERCADOPAGO_PUBLIC_KEY}
       
       # Configuración JVM
       JAVA_OPTS: "-Xmx512m -Xms256m"
