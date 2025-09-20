@@ -1,8 +1,8 @@
 package ucn.cl.factous.backArquitectura.config;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -19,23 +19,26 @@ public class RenderDataSourceConfig {
 
     @Bean
     @Primary
-    @ConfigurationProperties("spring.datasource")
-    public DataSourceProperties dataSourceProperties() {
-        DataSourceProperties properties = new DataSourceProperties();
-        
-        // Convertir la URL de Render de postgresql:// a jdbc:postgresql://
+    public DataSource dataSource() {
+        // Convertir la URL de Render al formato JDBC
         String jdbcUrl = convertRenderUrlToJdbc(databaseUrl);
         
-        properties.setUrl(jdbcUrl);
-        properties.setDriverClassName("org.postgresql.Driver");
+        // Configurar HikariCP manualmente para tener control total
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(jdbcUrl);
+        config.setDriverClassName("org.postgresql.Driver");
         
-        return properties;
-    }
-
-    @Bean
-    @Primary
-    public DataSource dataSource() {
-        return dataSourceProperties().initializeDataSourceBuilder().build();
+        // Configuración optimizada para Render
+        config.setMaximumPoolSize(5);
+        config.setMinimumIdle(1);
+        config.setConnectionTimeout(20000);
+        config.setIdleTimeout(600000);
+        config.setMaxLifetime(1800000);
+        config.setLeakDetectionThreshold(60000);
+        
+        System.out.println("🔗 Configurando DataSource para Render con URL: " + jdbcUrl);
+        
+        return new HikariDataSource(config);
     }
 
     /**
@@ -46,6 +49,8 @@ public class RenderDataSourceConfig {
             throw new RuntimeException("DATABASE_URL no está configurada");
         }
         
+        System.out.println("🔍 URL original de Render: " + renderUrl);
+        
         // Si ya tiene el prefijo jdbc:, no hacer nada
         if (renderUrl.startsWith("jdbc:")) {
             return renderUrl;
@@ -53,12 +58,16 @@ public class RenderDataSourceConfig {
         
         // Si empieza con postgresql://, convertir a jdbc:postgresql://
         if (renderUrl.startsWith("postgresql://")) {
-            return "jdbc:" + renderUrl;
+            String jdbcUrl = "jdbc:" + renderUrl;
+            System.out.println("✅ URL convertida a JDBC: " + jdbcUrl);
+            return jdbcUrl;
         }
         
         // Si empieza con postgres://, convertir a jdbc:postgresql://
         if (renderUrl.startsWith("postgres://")) {
-            return renderUrl.replace("postgres://", "jdbc:postgresql://");
+            String jdbcUrl = renderUrl.replace("postgres://", "jdbc:postgresql://");
+            System.out.println("✅ URL convertida a JDBC: " + jdbcUrl);
+            return jdbcUrl;
         }
         
         throw new RuntimeException("Formato de DATABASE_URL no reconocido: " + renderUrl);
