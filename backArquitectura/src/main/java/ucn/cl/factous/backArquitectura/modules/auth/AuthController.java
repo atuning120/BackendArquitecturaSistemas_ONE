@@ -16,7 +16,7 @@ import ucn.cl.factous.backArquitectura.modules.user.service.UserService;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = {"http://localhost:5173", "http://127.0.0.1:5173"})
+@CrossOrigin(origins = {"${FRONT_URI:http://localhost:5173}", "${FRONT_URI_ALTERNATIVE:http://127.0.0.1:5173}", "${FRONTEND_URL:http://localhost:3000}"})
 public class AuthController {
 
     @Autowired

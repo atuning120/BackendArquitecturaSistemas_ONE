@@ -33,6 +33,9 @@ public class CorsConfig {
         config.addAllowedOrigin("http://127.0.0.1:5173");
         config.addAllowedOrigin("http://localhost:3000");
         
+        // Permitir dominio de producción en Vercel
+        config.addAllowedOrigin("https://frontend-arquitectura-sistemas-one.vercel.app");
+        
         // Permitir todos los métodos HTTP
         config.addAllowedMethod("GET");
         config.addAllowedMethod("POST");
