@@ -1,7 +1,10 @@
 # Dockerfile multietapa para Spring Boot con Maven
 
 # Etapa 1: Build
-FROM maven:3.9-openjdk-17-slim AS build
+FROM eclipse-temurin:17-jdk-alpine AS build
+
+# Instalar Maven
+RUN apk add --no-cache maven
 
 # Establecer directorio de trabajo
 WORKDIR /app
@@ -22,10 +25,10 @@ COPY src src
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Runtime
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jre-alpine
 
 # Crear usuario no-root para seguridad
-RUN addgroup --system spring && adduser --system spring --ingroup spring
+RUN addgroup -S spring && adduser -S spring -G spring
 
 # Establecer directorio de trabajo
 WORKDIR /app
