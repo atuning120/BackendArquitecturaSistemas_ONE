@@ -67,7 +67,7 @@ public class RenderDataSourceConfig {
             
             String scheme = uri.getScheme(); // postgresql
             String host = uri.getHost();     // dpg-d37bf1er433s73ejroe0-a.oregon-postgres.render.com
-            int port = uri.getPort();        // debería ser 5432
+            int port = uri.getPort() == -1 ? 5432 : uri.getPort(); // Puerto por defecto PostgreSQL si no está especificado
             String database = uri.getPath().substring(1); // bd_arquitecturauno (sin la barra inicial)
             
             // Extraer usuario y contraseña del userInfo
@@ -81,7 +81,7 @@ public class RenderDataSourceConfig {
             
             System.out.println("✅ Componentes parseados:");
             System.out.println("   Host: " + host);
-            System.out.println("   Puerto: " + port);
+            System.out.println("   Puerto: " + port + (uri.getPort() == -1 ? " (por defecto)" : ""));
             System.out.println("   Base de datos: " + database);
             System.out.println("   Usuario: " + username);
             System.out.println("   JDBC URL: " + jdbcUrl);
