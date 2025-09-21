@@ -4,10 +4,13 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mercadopago.MercadoPagoConfig;
@@ -21,11 +24,17 @@ import com.mercadopago.resources.preference.Preference;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import ucn.cl.factous.backArquitectura.modules.payment.dto.PaymentPreferenceDTO;
+import ucn.cl.factous.backArquitectura.shared.dto.PurchaseTicketDTO;
+import ucn.cl.factous.backArquitectura.shared.dto.TicketDTO;
+import ucn.cl.factous.backArquitectura.shared.service.TicketService;
 
 @RestController
 @RequestMapping("/api/mercadopago")
 @CrossOrigin(origins = { "${FRONT_URI}", "${FRONT_URI_ALTERNATIVE}" })
 public class MercadoPagoController {
+
+    @Autowired
+    private TicketService ticketService;
 
     @PostMapping("/create-preference")
     public String createPaymentPreference(@RequestBody PaymentPreferenceDTO paymentData) {
@@ -55,17 +64,33 @@ public class MercadoPagoController {
             }
 
             // Construir URLs de retorno
-            String successUrl = normalizedFrontUri + "/available-events";
-            String pendingUrl = normalizedFrontUri + "/available-events";
-            String failureUrl = normalizedFrontUri + "/available-events";
+            // Para desarrollo local, seguir usando el frontend
+            // Para producción, usar el endpoint del backend para procesar el pago
+            String successUrl, pendingUrl, failureUrl;
+            
+            // Detectar si estamos en modo desarrollo
+            boolean isLocalhost = normalizedFrontUri.contains("localhost") || normalizedFrontUri.contains("127.0.0.1");
+            
+            if (isLocalhost) {
+                // Desarrollo: dirigir al frontend
+                successUrl = normalizedFrontUri + "/payment-confirmation";
+                pendingUrl = normalizedFrontUri + "/available-events";
+                failureUrl = normalizedFrontUri + "/available-events";
+            } else {
+                // Producción: dirigir al backend para procesar, luego redirigir al frontend
+                String backendUrl = getEnvironmentVariable("BACKEND_URL", "RENDER_EXTERNAL_URL");
+                if (backendUrl == null) {
+                    backendUrl = "https://backendarquitecturasistemas-one.onrender.com";
+                }
+                successUrl = backendUrl + "/api/mercadopago/payment-success";
+                pendingUrl = normalizedFrontUri + "/available-events";
+                failureUrl = normalizedFrontUri + "/available-events";
+            }
 
             System.out.println("URLs de retorno configuradas:");
             System.out.println("Success: " + successUrl);
             System.out.println("Pending: " + pendingUrl);
             System.out.println("Failure: " + failureUrl);
-
-            // Detectar si estamos en modo desarrollo
-            boolean isLocalhost = normalizedFrontUri.contains("localhost") || normalizedFrontUri.contains("127.0.0.1");
             System.out.println("Modo desarrollo (localhost): " + isLocalhost);
 
             // URLs de retorno
@@ -99,7 +124,7 @@ public class MercadoPagoController {
                         .items(items)
                         .backUrls(backUrls)
                         .autoReturn("all")
-                        .externalReference("USER_" + paymentData.getUserId() + "_EVENT_" + paymentData.getEventId())
+                        .externalReference("USER_" + paymentData.getUserId() + "_EVENT_" + paymentData.getEventId() + "_QTY_" + paymentData.getQuantity())
                         .build();
                 System.out.println("Configuración: Producción con autoReturn");
             } else {
@@ -107,7 +132,7 @@ public class MercadoPagoController {
                 preferenceRequest = PreferenceRequest.builder()
                         .items(items)
                         .backUrls(backUrls)
-                        .externalReference("USER_" + paymentData.getUserId() + "_EVENT_" + paymentData.getEventId())
+                        .externalReference("USER_" + paymentData.getUserId() + "_EVENT_" + paymentData.getEventId() + "_QTY_" + paymentData.getQuantity())
                         .build();
                 System.out.println("Configuración: Desarrollo sin autoReturn");
             }
@@ -164,6 +189,64 @@ public class MercadoPagoController {
             // Si no se puede cargar .env, simplemente retornar null
             System.out.println("No se pudo cargar archivo .env: " + e.getMessage());
             return null;
+        }
+    }
+
+    /**
+     * Endpoint para procesar el éxito del pago y crear tickets automáticamente
+     */
+    @PostMapping("/payment-success")
+    public ResponseEntity<?> processPaymentSuccess(@RequestParam String collection_id,
+                                                  @RequestParam String collection_status,
+                                                  @RequestParam String external_reference) {
+        try {
+            System.out.println("Procesando pago exitoso:");
+            System.out.println("Collection ID: " + collection_id);
+            System.out.println("Status: " + collection_status);
+            System.out.println("External Reference: " + external_reference);
+
+            // Verificar que el pago fue aprobado
+            if (!"approved".equals(collection_status)) {
+                // Redirigir al frontend con error
+                String frontUri = getEnvironmentVariable("FRONT_URI", "FRONTEND_URL");
+                return ResponseEntity.status(302)
+                    .header("Location", frontUri + "/payment-failed")
+                    .body("Pago no fue aprobado");
+            }
+
+            // Extraer información del external_reference: "USER_123_EVENT_456_QTY_2"
+            String[] parts = external_reference.split("_");
+            if (parts.length != 6 || !"USER".equals(parts[0]) || !"EVENT".equals(parts[2]) || !"QTY".equals(parts[4])) {
+                String frontUri = getEnvironmentVariable("FRONT_URI", "FRONTEND_URL");
+                return ResponseEntity.status(302)
+                    .header("Location", frontUri + "/payment-failed")
+                    .body("Formato de referencia externa inválido");
+            }
+
+            Long userId = Long.parseLong(parts[1]);
+            Long eventId = Long.parseLong(parts[3]);
+            Integer quantity = Integer.parseInt(parts[5]);
+
+            // Crear el ticket usando el servicio existente con la cantidad correcta
+            PurchaseTicketDTO purchaseDTO = new PurchaseTicketDTO(eventId, userId, quantity);
+            TicketDTO ticket = ticketService.purchaseTicket(purchaseDTO);
+
+            System.out.println("Ticket creado exitosamente: " + ticket.getId());
+            
+            // Redirigir al frontend con éxito
+            String frontUri = getEnvironmentVariable("FRONT_URI", "FRONTEND_URL");
+            return ResponseEntity.status(302)
+                .header("Location", frontUri + "/payment-success?ticketId=" + ticket.getId())
+                .body("Ticket creado exitosamente");
+
+        } catch (Exception e) {
+            System.err.println("Error procesando pago exitoso: " + e.getMessage());
+            e.printStackTrace();
+            
+            String frontUri = getEnvironmentVariable("FRONT_URI", "FRONTEND_URL");
+            return ResponseEntity.status(302)
+                .header("Location", frontUri + "/payment-failed")
+                .body("Error interno del servidor");
         }
     }
 }
