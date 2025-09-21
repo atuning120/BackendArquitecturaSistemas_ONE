@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mercadopago.MercadoPagoConfig;
@@ -194,33 +195,51 @@ public class MercadoPagoController {
 
     /**
      * Endpoint para procesar el éxito del pago y crear tickets automáticamente
+     * MercadoPago envía los parámetros como GET
      */
-    @PostMapping("/payment-success")
-    public ResponseEntity<?> processPaymentSuccess(@RequestParam String collection_id,
-                                                  @RequestParam String collection_status,
-                                                  @RequestParam String external_reference) {
+    @GetMapping("/payment-success")
+    public ResponseEntity<?> processPaymentSuccess(@RequestParam(required = false) String collection_id,
+                                                  @RequestParam(required = false) String collection_status,
+                                                  @RequestParam(required = false) String external_reference,
+                                                  @RequestParam(required = false) String payment_id,
+                                                  @RequestParam(required = false) String status,
+                                                  @RequestParam(required = false) String merchant_order_id) {
         try {
             System.out.println("Procesando pago exitoso:");
             System.out.println("Collection ID: " + collection_id);
-            System.out.println("Status: " + collection_status);
+            System.out.println("Collection Status: " + collection_status);
+            System.out.println("Payment ID: " + payment_id);
+            System.out.println("Status: " + status);
             System.out.println("External Reference: " + external_reference);
+            System.out.println("Merchant Order ID: " + merchant_order_id);
 
-            // Verificar que el pago fue aprobado
-            if (!"approved".equals(collection_status)) {
-                // Redirigir al frontend con error
+            // Determinar el estado del pago y el ID de referencia
+            String paymentStatus = collection_status != null ? collection_status : status;
+            String reference = external_reference;
+
+            // Verificar que tenemos la información necesaria
+            if (reference == null || reference.isEmpty()) {
                 String frontUri = getEnvironmentVariable("FRONT_URI", "FRONTEND_URL");
                 return ResponseEntity.status(302)
-                    .header("Location", frontUri + "/payment-failed")
-                    .body("Pago no fue aprobado");
+                    .header("Location", frontUri + "/payment-failed?error=no_reference")
+                    .body("No se encontró referencia externa");
+            }
+
+            // Verificar que el pago fue aprobado
+            if (paymentStatus == null || (!paymentStatus.equals("approved") && !paymentStatus.equals("success"))) {
+                String frontUri = getEnvironmentVariable("FRONT_URI", "FRONTEND_URL");
+                return ResponseEntity.status(302)
+                    .header("Location", frontUri + "/payment-failed?error=not_approved&status=" + paymentStatus)
+                    .body("Pago no fue aprobado: " + paymentStatus);
             }
 
             // Extraer información del external_reference: "USER_123_EVENT_456_QTY_2"
-            String[] parts = external_reference.split("_");
+            String[] parts = reference.split("_");
             if (parts.length != 6 || !"USER".equals(parts[0]) || !"EVENT".equals(parts[2]) || !"QTY".equals(parts[4])) {
                 String frontUri = getEnvironmentVariable("FRONT_URI", "FRONTEND_URL");
                 return ResponseEntity.status(302)
-                    .header("Location", frontUri + "/payment-failed")
-                    .body("Formato de referencia externa inválido");
+                    .header("Location", frontUri + "/payment-failed?error=invalid_reference&ref=" + reference)
+                    .body("Formato de referencia externa inválido: " + reference);
             }
 
             Long userId = Long.parseLong(parts[1]);
@@ -248,5 +267,19 @@ public class MercadoPagoController {
                 .header("Location", frontUri + "/payment-failed")
                 .body("Error interno del servidor");
         }
+    }
+
+    /**
+     * Endpoint de debug para ver todos los parámetros que envía MercadoPago
+     */
+    @GetMapping("/payment-debug")
+    public ResponseEntity<String> debugPayment(@RequestParam java.util.Map<String, String> allParams) {
+        StringBuilder response = new StringBuilder("Parámetros recibidos:\n");
+        for (java.util.Map.Entry<String, String> entry : allParams.entrySet()) {
+            response.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        
+        System.out.println("DEBUG - " + response.toString());
+        return ResponseEntity.ok(response.toString());
     }
 }
