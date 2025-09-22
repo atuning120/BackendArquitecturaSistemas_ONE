@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 
 import ucn.cl.factous.backArquitectura.modules.user.entity.User;
 import ucn.cl.factous.backArquitectura.modules.event.entity.Event;
@@ -30,6 +31,9 @@ public class Ticket {
     @ManyToOne
     @JoinColumn(name = "sale_id")
     private Sale sale;
+
+    @Column(name = "qr_code", columnDefinition = "TEXT")
+    private String qrCode;
 
     public Ticket() {}
 
@@ -73,6 +77,14 @@ public class Ticket {
 
     public void setSale(Sale sale) {
         this.sale = sale;
+    }
+
+    public String getQrCode() {
+        return qrCode;
+    }
+
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
     }   
 
     @Override

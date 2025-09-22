@@ -36,6 +36,9 @@ public class TicketService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private QRCodeService qrCodeService;
+
     public List<TicketDTO> getTicketsByUser(Long userId) {
         return ticketRepository.findByUserId(userId)
                 .stream()
@@ -84,14 +87,33 @@ public class TicketService {
         for (int i = 0; i < purchaseDTO.getQuantity(); i++) {
             Ticket ticket = new Ticket(event.getTicketPrice(), event, user);
             ticket.setSale(savedSale);
-            tickets.add(ticketRepository.save(ticket));
+            
+            // Guardar primero para obtener el ID
+            Ticket savedTicket = ticketRepository.save(ticket);
+            
+            // Generar QR después de tener el ID
+            String qrData = qrCodeService.generateTicketQRData(
+                savedTicket.getId(),
+                event.getEventName(),
+                user.getName(),
+                event.getEventDate().toString()
+            );
+            String qrCode = qrCodeService.generateQRCode(qrData);
+            
+            // Actualizar ticket con QR
+            savedTicket.setQrCode(qrCode);
+            tickets.add(ticketRepository.save(savedTicket));
         }
 
         // Retornar el primer ticket (o podrías retornar todos)
         return convertToDto(tickets.get(0));
     }
 
-    private TicketDTO convertToDto(Ticket ticket) {
+    public Optional<Ticket> getTicketById(Long ticketId) {
+        return ticketRepository.findById(ticketId);
+    }
+
+    public TicketDTO convertToDto(Ticket ticket) {
         String eventDate = ticket.getEvent().getEventDate() != null 
             ? ticket.getEvent().getEventDate().toString() 
             : "";
@@ -103,7 +125,8 @@ public class TicketService {
             ticket.getuser().getId(),
             ticket.getSale() != null ? ticket.getSale().getId() : null,
             ticket.getEvent().getEventName(),
-            eventDate
+            eventDate,
+            ticket.getQrCode()
         );
     }
 }
