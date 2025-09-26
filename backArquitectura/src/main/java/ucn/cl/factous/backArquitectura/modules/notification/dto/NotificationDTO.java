@@ -13,5 +13,6 @@ public class NotificationDTO {
     private String message;
     private String timestamp;
     private Long eventId;
-    private String eventTitle;
+    private Long userId;
+    private boolean isRead;
 }
