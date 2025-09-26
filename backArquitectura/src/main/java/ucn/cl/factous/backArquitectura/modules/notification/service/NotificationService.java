@@ -48,7 +48,8 @@ public class NotificationService {
             
             Notification notification = new Notification("purchase_success", title, message, eventId, userId);
             notificationRepository.save(notification);
-            messagingTemplate.convertAndSendToUser(String.valueOf(userId), "/queue/notifications", convertToDTO(notification));
+            // enviar como string un JSON con el dto de usuario
+            messagingTemplate.convertAndSendToUser(("{\"user\":" + userId + "}"), "/queue/notifications", convertToDTO(notification));
         } catch (Exception e) {
             System.err.println("Error enviando notificación general WebSocket: " + e.getMessage());
             e.printStackTrace();
@@ -83,7 +84,7 @@ public class NotificationService {
                 notificationRepository.save(notification);
 
                 try {
-                    messagingTemplate.convertAndSendToUser(String.valueOf(userId), "/queue/notifications", convertToDTO(notification));
+                    messagingTemplate.convertAndSendToUser(("{\"user\":" + userId + "}"), "/queue/notifications", convertToDTO(notification));
                 } catch (Exception e) {
                     System.err.println("El envío WS para usuario " + userId + " falló");
                 }
@@ -121,7 +122,7 @@ public class NotificationService {
                 notificationRepository.save(notification);
 
                 try {
-                    messagingTemplate.convertAndSendToUser(String.valueOf(userId), "/queue/notifications", convertToDTO(notification));
+                    messagingTemplate.convertAndSendToUser(("{\"user\":" + userId + "}"), "/queue/notifications", convertToDTO(notification));
                 } catch (Exception e) {
                     System.err.println("El envío WS para usuario " + userId + " falló");
                 }
