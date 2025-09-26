@@ -76,9 +76,10 @@ Este sistema maneja 3 tipos de usuarios:
 
 | Método | Endpoint | Descripción | Tipo de Usuario |
 |--------|----------|-------------|-----------------|
-| `POST` | `/tickets/purchase` | **CLIENTES**: Comprar tickets | Cliente |
-| `GET` | `/tickets/user/{userId}` | **CLIENTES**: Ver mis tickets | Cliente |
+| `POST` | `/tickets/purchase` | **CLIENTES**: Comprar tickets (incluye QR automático) | Cliente |
+| `GET` | `/tickets/user/{userId}` | **CLIENTES**: Ver mis tickets con QR | Cliente |
 | `GET` | `/tickets/event/{eventId}` | **ORGANIZADORES**: Ver tickets vendidos de mi evento | Organizador |
+| `POST` | `/tickets/validate-qr` | **VALIDACIÓN**: Validar código QR de ticket | Staff/Organizador |
 
 ---
 
@@ -124,6 +125,27 @@ Este sistema maneja 3 tipos de usuarios:
   "eventId": 1,
   "userId": 2,
   "quantity": 2
+}
+```
+
+### Respuesta de Compra de Ticket (incluye QR):
+```json
+{
+  "id": 1,
+  "price": 25000.0,
+  "eventId": 1,
+  "userId": 2,
+  "saleId": 1,
+  "eventName": "Concierto de Rock",
+  "eventDate": "2024-12-25T20:00:00",
+  "qrCode": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADI..."
+}
+```
+
+### Validar QR Code:
+```json
+{
+  "qrData": "TICKET_ID:1|EVENT:Concierto de Rock|USER:Juan Pérez|DATE:2024-12-25T20:00:00|VALIDATION_CODE:VAL11234"
 }
 ```
 
@@ -218,6 +240,13 @@ curl http://localhost:8080/events/spot/1
 curl http://localhost:8080/tickets/user/3
 ```
 
+### Validar QR Code (Staff/Organizador):
+```bash
+curl -X POST http://localhost:8080/tickets/validate-qr \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "qrData=TICKET_ID:1|EVENT:Concierto de Rock|USER:Juan Pérez|DATE:2024-12-25T20:00:00|VALIDATION_CODE:VAL11234"
+```
+
 ---
 
 ## ⚠️ Notas Importantes
@@ -227,3 +256,23 @@ curl http://localhost:8080/tickets/user/3
 - La capacidad de eventos es opcional, pero recomendada
 - El sistema valida que no se vendan más tickets que la capacidad del evento
 - Los roles de usuario son: "CLIENTE", "ORGANIZADOR", "PROPIETARIO"
+
+## 🎫 **Nueva Funcionalidad: Códigos QR**
+
+### ✨ **Características del Sistema QR:**
+- **Generación automática**: Cada ticket comprado genera un QR único
+- **Contenido del QR**: ID del ticket, evento, usuario, fecha y código de validación
+- **Formato Base64**: El QR se devuelve como imagen en formato Base64
+- **Validación**: Endpoint para escanear y validar QRs en eventos
+
+### 📱 **Flujo de QR Codes:**
+1. **Cliente compra ticket** → Se genera QR automáticamente
+2. **Cliente recibe ticket con QR** → Puede mostrar/descargar/imprimir
+3. **En el evento** → Staff escanea QR para validar entrada
+4. **Validación exitosa** → Se muestran datos del ticket y evento
+
+### 🔧 **Implementación Técnica:**
+- **Librería ZXing**: Para generar códigos QR
+- **Almacenamiento**: QR en Base64 guardado en base de datos
+- **Validación**: Extracción de datos del QR para verificar autenticidad
+- **Seguridad**: Código de validación único por ticket

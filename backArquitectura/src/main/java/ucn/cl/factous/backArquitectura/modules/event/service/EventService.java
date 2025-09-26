@@ -11,10 +11,13 @@ import org.springframework.stereotype.Service;
 import ucn.cl.factous.backArquitectura.modules.event.dto.EventDTO;
 import ucn.cl.factous.backArquitectura.modules.event.entity.Event;
 import ucn.cl.factous.backArquitectura.modules.event.repository.EventRepository;
+import ucn.cl.factous.backArquitectura.modules.notification.service.NotificationService;
 import ucn.cl.factous.backArquitectura.modules.spot.entity.Spot;
 import ucn.cl.factous.backArquitectura.modules.spot.repository.SpotRepository;
 import ucn.cl.factous.backArquitectura.modules.user.entity.User;
 import ucn.cl.factous.backArquitectura.modules.user.repository.UserRepository;
+import ucn.cl.factous.backArquitectura.shared.entity.Ticket;
+import ucn.cl.factous.backArquitectura.shared.repository.TicketRepository;
 
 @Service
 public class EventService {
@@ -24,6 +27,10 @@ public class EventService {
     private UserRepository userRepository;
     @Autowired
     private SpotRepository spotRepository;
+    @Autowired(required = false)
+    private NotificationService notificationService;
+    @Autowired
+    private TicketRepository ticketRepository;
 
     public List<EventDTO> getAllEvents() {
         return eventRepository.findAll()
@@ -73,11 +80,46 @@ public class EventService {
     }
 
     public boolean deleteEvent(Long id) {
-        if (eventRepository.existsById(id)) {
+        try {
+            System.out.println("=== ELIMINANDO EVENTO ID: " + id + " ===");
+            
+            // Verificar si el evento existe
+            if (!eventRepository.existsById(id)) {
+                System.out.println("❌ Evento con ID " + id + " no encontrado");
+                return false;
+            }
+            
+            // Obtener título del evento para la notificación
+            Optional<Event> eventOptional = eventRepository.findById(id);
+            String eventTitle = eventOptional.map(Event::getEventName).orElse("Evento desconocido");
+            System.out.println("📍 Evento encontrado: \"" + eventTitle + "\"");
+            
+            // 1. Eliminar tickets asociados
+            List<Ticket> tickets = ticketRepository.findByEventId(id);
+            if (!tickets.isEmpty()) {
+                System.out.println("🎫 Eliminando " + tickets.size() + " tickets...");
+                ticketRepository.deleteAll(tickets);
+                System.out.println("✅ Tickets eliminados");
+            }
+            
+            // 2. Eliminar el evento
             eventRepository.deleteById(id);
+            System.out.println("✅ Evento eliminado de BD");
+            
+            // 3. Enviar notificación WebSocket
+            if (notificationService != null) {
+                System.out.println("📡 Enviando notificación...");
+                notificationService.sendEventDeletedNotification(id, eventTitle);
+            }
+            
+            System.out.println("🎉 ELIMINACIÓN COMPLETA - ID: " + id);
             return true;
+            
+        } catch (Exception e) {
+            System.err.println("❌ ERROR eliminando evento " + id + ": " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error al eliminar el evento: " + e.getMessage(), e);
         }
-        return false;
     }
 
     // Métodos específicos para diferentes tipos de usuario

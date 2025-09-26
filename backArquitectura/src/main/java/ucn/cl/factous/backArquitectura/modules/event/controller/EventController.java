@@ -59,11 +59,22 @@ public class EventController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
-        boolean isDeleted = eventService.deleteEvent(id);
-        if (isDeleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+        try {
+            System.out.println("=== CONTROLADOR: Recibida petición DELETE para evento ID: " + id + " ===");
+            boolean isDeleted = eventService.deleteEvent(id);
+            if (isDeleted) {
+                System.out.println("=== CONTROLADOR: Evento eliminado exitosamente ===");
+                return ResponseEntity.noContent().build();
+            } else {
+                System.out.println("=== CONTROLADOR: Evento no encontrado ===");
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            System.err.println("=== CONTROLADOR: Error en eliminación ===");
+            System.err.println("Error en controlador: " + e.getMessage());
+            e.printStackTrace();
+            System.err.println("=== CONTROLADOR: Fin error ===");
+            return ResponseEntity.status(500).build();
         }
     }
 
