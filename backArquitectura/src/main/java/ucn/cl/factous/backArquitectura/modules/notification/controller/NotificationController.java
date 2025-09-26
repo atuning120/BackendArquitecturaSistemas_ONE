@@ -1,5 +1,6 @@
 package ucn.cl.factous.backArquitectura.modules.notification.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ucn.cl.factous.backArquitectura.modules.notification.dto.NotificationDTO;
 import ucn.cl.factous.backArquitectura.modules.notification.service.NotificationService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @RestController
 @RequestMapping("/notifications")
@@ -21,22 +25,21 @@ public class NotificationController {
 
     @Autowired
     private NotificationService notificationService;
-/* 
-    // Para notificaciones no leidas    
-    @GetMapping("/unread")
-    // Verificar como el front manda id
-    public ResponseEntity<List<NotificationDTO>> getUnreadNotifications(Long userId) {
-        if (userId == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<NotificationDTO>> getUnreadNotifications(@PathVariable Long userId) {
+        if ( userId == null || userId <= 0) {
+            return ResponseEntity.badRequest().build();
         }
-        
-    } */
-/* 
-    // para marcar notificacion como leida
+        List<NotificationDTO> notifications = notificationService.getNotificationsByUser(userId);
+        return ResponseEntity.ok(notifications);
+    }
+
     @PostMapping("/{id}/read")
     public ResponseEntity<NotificationDTO> markAsRead(@PathVariable("id") Long notificationId) {
+        notificationService.markAsRead(notificationId);
+        return ResponseEntity.ok().build();
     }
- */
 
     @PostMapping("/purchase-success")
     public ResponseEntity<String> sendPurchaseSuccess(@RequestBody Map<String, Object> payload) {

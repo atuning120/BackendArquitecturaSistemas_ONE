@@ -24,6 +24,7 @@ import com.mercadopago.exceptions.MPException;
 import com.mercadopago.resources.preference.Preference;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import ucn.cl.factous.backArquitectura.modules.notification.service.NotificationService;
 import ucn.cl.factous.backArquitectura.modules.payment.dto.PaymentPreferenceDTO;
 import ucn.cl.factous.backArquitectura.shared.dto.PurchaseTicketDTO;
 import ucn.cl.factous.backArquitectura.shared.dto.TicketDTO;
@@ -36,6 +37,9 @@ public class MercadoPagoController {
 
     @Autowired
     private TicketService ticketService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @PostMapping("/create-preference")
     public String createPaymentPreference(@RequestBody PaymentPreferenceDTO paymentData) {
@@ -249,7 +253,7 @@ public class MercadoPagoController {
             // Crear el ticket usando el servicio existente con la cantidad correcta
             PurchaseTicketDTO purchaseDTO = new PurchaseTicketDTO(eventId, userId, quantity);
             TicketDTO ticket = ticketService.purchaseTicket(purchaseDTO);
-
+            notificationService.sendPurchaseSuccessNotification(userId, eventId);
             System.out.println("Ticket creado exitosamente: " + ticket.getId());
             
             // Redirigir al frontend con éxito

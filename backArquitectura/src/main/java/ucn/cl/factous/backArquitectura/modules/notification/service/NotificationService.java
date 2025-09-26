@@ -31,6 +31,20 @@ public class NotificationService {
     @Autowired
     private EventRepository eventRepository;
 
+    public List<NotificationDTO> getNotificationsByUser(Long userId) {
+        List<Notification> notifications = notificationRepository.findByUserId(userId);
+        notifications.addAll(notificationRepository.findByUserIdIsNull());
+        return notifications.stream().map(this::convertToDTO).toList();
+    }
+
+    public void markAsRead(Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId).orElse(null);
+        if (notification != null && !notification.isRead()) {
+            notification.setRead(true);
+            notificationRepository.save(notification);
+        }
+    }
+
     @Transactional
     public void sendPurchaseSuccessNotification(Long userId, Long eventId) {
         try {
