@@ -1,6 +1,5 @@
 package ucn.cl.factous.backArquitectura.modules.event.service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -109,7 +108,7 @@ public class EventService {
             // 3. Enviar notificación WebSocket
             if (notificationService != null) {
                 System.out.println("📡 Enviando notificación...");
-                notificationService.sendEventDeletedNotification(id, eventTitle);
+                notificationService.sendEventDeletedNotification(id);
             }
             
             System.out.println("🎉 ELIMINACIÓN COMPLETA - ID: " + id);

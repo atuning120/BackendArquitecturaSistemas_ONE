@@ -39,7 +39,7 @@ public class NotificationTestController {
     public ResponseEntity<String> sendEventDeletedTest() {
         try {
             System.out.println("=== ENVIANDO NOTIFICACIÓN DE EVENTO ELIMINADO DE PRUEBA ===");
-            notificationService.sendEventDeletedNotification(999L, "Evento de Prueba");
+            notificationService.sendEventDeletedNotification(999L);
             System.out.println("=== NOTIFICACIÓN DE EVENTO ELIMINADO ENVIADA ===");
             return ResponseEntity.ok("Notificación de evento eliminado enviada");
         } catch (Exception e) {
