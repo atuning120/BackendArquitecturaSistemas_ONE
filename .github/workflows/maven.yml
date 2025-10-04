@@ -29,17 +29,12 @@ jobs:
           POSTGRES_PASSWORD: ci_password
 
     env:
-      DB_HOST: "database" 
-      DB_PORT: 5432 
-      DB_NAME: "ci_test_db"
-      DB_USER: "ci_user"
-      DB_PASSWORD: "ci_password"
-      
+      DATABASE_URL: "postgresql://ci_user:ci_password@database:5432/ci_test_db"
       FRONTEND_URL: "https://frontend-arquitectura-sistemas-one.vercel.app"
       FRONT_URI: "https://frontend-arquitectura-sistemas-one.vercel.app"
       PORT: 8080
-      TEST_ACCESS_TOKEN: "APP_USR-1796706277230007-091116-7407982a39e687f2d1a441ceb4c2b7cb-2682014813" 
-
+      TEST_ACCESS_TOKEN: "APP_USR-1796706277230007-091116-7407982a39e687f2d1a441ceb4c2b7cb-2682014813"
+      
     steps:
     - uses: actions/checkout@v4
     
