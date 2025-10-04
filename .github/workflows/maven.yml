@@ -27,12 +27,16 @@ jobs:
           POSTGRES_DB: ci_test_db
           POSTGRES_USER: ci_user
           POSTGRES_PASSWORD: ci_password
+        options: >
+          --health-cmd "pg_isready"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
 
     env:
-      DB_HOST_LOCAL: "database:5432"
-      DB_NAME_LOCAL: "ci_test_db"
-      DB_USER_LOCAL: "ci_user"
-      DB_PASSWORD_LOCAL: "ci_password"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://database:5432/ci_test_db"
+      SPRING_DATASOURCE_USERNAME: "ci_user"
+      SPRING_DATASOURCE_PASSWORD: "ci_password"
       FRONTEND_URL: "https://frontend-arquitectura-sistemas-one.vercel.app"
       FRONT_URI: "https://frontend-arquitectura-sistemas-one.vercel.app"
       PORT: 8080
@@ -52,9 +56,13 @@ jobs:
       working-directory: ./backArquitectura 
       run: mvn -B package --file pom.xml
 
+
     - name: Run Tests
       working-directory: ./backArquitectura
-      run: mvn -B test --file pom.xml
+      run: 
+        echo "Waiting 10 seconds for PostgreSQL service to fully start..."
+        sleep 10 
+        mvn -B test --file pom.xml
       
     - name: Update dependency graph
       uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
