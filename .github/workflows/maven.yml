@@ -59,7 +59,7 @@ jobs:
           done
 
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
+        run: mvn -B package --file backArquitectura/pom.xml
 
       - name: Run tests
         env:
@@ -68,4 +68,4 @@ jobs:
           DB_NAME_LOCAL: ci_test_db
           DB_USER_LOCAL: ci_user
           DB_PASSWORD_LOCAL: ci_password
-        run: mvn -B test --file pom.xml
+        run: mvn -B test --file backArquitectura/pom.xml
