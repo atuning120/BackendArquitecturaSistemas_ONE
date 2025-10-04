@@ -16,7 +16,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     services:
@@ -25,30 +24,41 @@ jobs:
         ports:
           - 5432:5432
         env:
-          DB_NAME_LOCAL: "back_arquitectura"
-          DB_USER_LOCAL: "postgres"
-          DB_PASSWORD_LOCAL: "password"
+          POSTGRES_DB: ci_test_db
+          POSTGRES_USER: ci_user
+          POSTGRES_PASSWORD: ci_password
 
-    env: 
-      DB_NAME_LOCAL: "back_arquitectura"
-      DB_USER_LOCAL: "postgres"
-      DB_PASSWORD_LOCAL: "password"
-      DB_HOST_LOCAL: "localhost"
-      FRONT_URI: "http://localhost:5173"
-      FRONT_URI_ALTERNATIVE: "http://127.0.0.1:5173"
-      PORT: 8080
+    env:
+      DB_HOST: "database" 
+      DB_PORT: 5432 
+      DB_NAME: "ci_test_db"
+      DB_USER: "ci_user"
+      DB_PASSWORD: "ci_password"
       
+      FRONTEND_URL: "https://frontend-arquitectura-sistemas-one.vercel.app"
+      FRONT_URI: "https://frontend-arquitectura-sistemas-one.vercel.app"
+      PORT: 8080
+      TEST_ACCESS_TOKEN: "APP_USR-1796706277230007-091116-7407982a39e687f2d1a441ceb4c2b7cb-2682014813" 
+
     steps:
     - uses: actions/checkout@v4
+    
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+        
     - name: Build with Maven
+      working-directory: ./backArquitectura 
       run: mvn -B package --file pom.xml
 
-    # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
+    - name: Run Tests
+      working-directory: ./backArquitectura
+      run: mvn -B test --file pom.xml
+
     - name: Update dependency graph
       uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+      with:
+        working-directory: backArquitectura
