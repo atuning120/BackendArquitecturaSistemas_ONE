@@ -77,11 +77,11 @@ public class UserService {
         return false;
     }
     
-    private UserDTO convertToDto(User user) {
+    public UserDTO convertToDto(User user) {
         return new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getPassword(), user.getRole());
     }
 
-    private User convertToEntity(UserDTO userDTO) {
+    public User convertToEntity(UserDTO userDTO) {
         User user = new User();
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());

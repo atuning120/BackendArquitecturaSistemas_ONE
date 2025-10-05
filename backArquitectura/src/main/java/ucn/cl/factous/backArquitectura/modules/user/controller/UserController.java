@@ -20,7 +20,7 @@ import ucn.cl.factous.backArquitectura.modules.user.service.UserService;
 
 @RestController
 @RequestMapping("/users")
-@CrossOrigin(origins = {"${FRONT_URI}", "${FRONT_URI_ALTERNATIVE}"})
+@CrossOrigin(origins = {"${FRONT_URI}", "${FRONT_URI_ALTERNATIVE}", "localhost:3000"})
 public class UserController {
 
     @Autowired
