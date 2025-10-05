@@ -23,7 +23,7 @@ jobs:
       DB_HOST_LOCAL: localhost
       DB_NAME_LOCAL: back_arquitectura
       DB_USER_LOCAL: postgres
-      DB_PASSWORD_LOCAL: jrg123
+      DB_PASSWORD_LOCAL: password
       FRONT_URI: http://localhost:5173
       FRONT_URI_ALTERNATIVE: http://127.0.0.1:5173
       PORT: 8080
