@@ -46,7 +46,4 @@ jobs:
 
       - name: Run tests (with H2)
         working-directory: backArquitectura
-        env:
-          FRONT_URI: https://frontend.com
-          MERCADOPAGO_ACCESS_TOKEN: TEST_TOKEN_123 
         run: mvn -B test
