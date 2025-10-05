@@ -21,6 +21,12 @@ public class SpotDTO {
         return id;
     }
 
+    public void setId(Long id) {
+        if (id != null) {
+            this.id = id;
+        }
+    }
+
     public String getName() {
         return name;
     }

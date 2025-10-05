@@ -54,6 +54,12 @@ public class Event {
         return id;
     }
 
+    public void setId(Long id) {
+        if (id != null) {
+            this.id = id;
+        }
+    }
+    
     public String getEventName() {
         return eventName;
     }
