@@ -46,6 +46,9 @@ public class MercadoPagoController {
         try {
             // Cargar variables de entorno (desde sistema o .env si existe)
             String accessToken = getEnvironmentVariable("TEST_ACCESS_TOKEN", "MERCADOPAGO_ACCESS_TOKEN");
+            if (accessToken == null || accessToken.isEmpty()) {
+                accessToken = System.getProperty("MERCADOPAGO_ACCESS_TOKEN"); //Alternativa para el test
+            }
             String frontUri = getEnvironmentVariable("FRONT_URI", "FRONTEND_URL");
 
             if (accessToken == null || accessToken.isEmpty()) {

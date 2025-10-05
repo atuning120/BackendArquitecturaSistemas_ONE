@@ -3,6 +3,8 @@ package ucn.cl.factous.backArquitectura.modules.payment;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -32,10 +34,10 @@ import ucn.cl.factous.backArquitectura.shared.service.TicketService;
 
 @WebMvcTest(MercadoPagoController.class)
 @TestPropertySource(properties = {
-    "FRONT_URI=https://frontend.com", 
-    "MERCADOPAGO_ACCESS_TOKEN="
+    "FRONT_URI=https://frontend.com",
+    "REAL_TEST_TOKEN=GLOBAL_TEST_TOKEN"
 })
-class MercadoPagoControllerTest {
+class PaymentControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,12 +54,13 @@ class MercadoPagoControllerTest {
     private Preference preferenceMock;
     private PaymentPreferenceDTO testPaymentData;
     private final String MOCKED_PREFERENCE_ID = "MOCK_PREF_12345";
-    private final String REAL_TEST_TOKEN = "TEST_TOKEN_123";
+    private final String REAL_TEST_TOKEN = "GLOBAL_TEST_TOKEN";
     
     @BeforeEach
     void setUp() {
         testPaymentData = new PaymentPreferenceDTO(100L, 1L, 2, "Test Event", 5000.0, 10000.0);
         preferenceMock = mock(Preference.class);
+        System.setProperty("MERCADOPAGO_ACCESS_TOKEN", REAL_TEST_TOKEN);
     }
 
     @AfterEach
@@ -66,8 +69,9 @@ class MercadoPagoControllerTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
     void shouldReturnPreferenceIdOnSuccess() throws Exception {
-        System.setProperty("MERCADOPAGO_ACCESS_TOKEN", REAL_TEST_TOKEN);
+        System.setProperty("MERCADOPAGO_ACCESS_TOKEN", "GLOBAL_TEST_TOKEN");
         try (var mockedConstruction = Mockito.mockConstruction(PreferenceClient.class,
                 (mock, context) -> when(mock.create(any(PreferenceRequest.class))).thenReturn(preferenceMock))) {
             when(preferenceMock.getId()).thenReturn(MOCKED_PREFERENCE_ID);
