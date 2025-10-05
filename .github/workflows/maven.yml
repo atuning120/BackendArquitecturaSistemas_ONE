@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven (Spring Boot + H2)
+name: Java CI with Maven
 
 on:
   push:
@@ -17,6 +17,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      SPRING_PROFILES_ACTIVE: test
+      DB_HOST_LOCAL: localhost
+      DB_NAME_LOCAL: back_arquitectura
+      DB_USER_LOCAL: postgres
+      DB_PASSWORD_LOCAL: jrg123
+      FRONT_URI: http://localhost:5173
+      FRONT_URI_ALTERNATIVE: http://127.0.0.1:5173
+      PORT: 8080
+      TEST_ACCESS_TOKEN: APP_USR-1796706277230007-091116-7407982a39e687f2d1a441ceb4c2b7cb-2682014813
+      DATABASE_URL: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
 
     steps:
       - name: Checkout repository
@@ -29,12 +41,10 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build project 
+      - name: Build with Maven (skip tests)
         working-directory: backArquitectura
         run: mvn -B clean package -DskipTests
 
-      - name: Run tests with H2
+      - name: Run tests (with H2)
         working-directory: backArquitectura
-        env:
-          SPRING_PROFILES_ACTIVE: test
         run: mvn -B test
