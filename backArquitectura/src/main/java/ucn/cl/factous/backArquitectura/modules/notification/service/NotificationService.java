@@ -111,6 +111,46 @@ public class NotificationService {
         }
     }
 
+    /**
+     * Envía notificaciones de evento eliminado a una lista específica de usuarios.
+     * Este método se usa cuando ya se conocen los usuarios afectados (por ejemplo, después de eliminar tickets).
+     */
+    @Transactional
+    public void sendEventDeletedNotificationToUsers(Long eventId, String eventTitle, List<Long> userIds) {
+        try {
+            if (messagingTemplate == null) {
+                System.out.println("SimpMessagingTemplate no disponible, saltando notificación WebSocket");
+                return;
+            }
+
+            if (userIds == null || userIds.isEmpty()) {
+                System.out.println("No hay usuarios para notificar sobre el evento eliminado");
+                return;
+            }
+
+            String type = "event_deleted";
+            String title = "Evento Cancelado";
+            String message = "El evento \"" + eventTitle + "\" ha sido cancelado por el organizador.";
+
+            System.out.println("📧 Enviando notificaciones de evento eliminado a " + userIds.size() + " usuarios");
+
+            for (Long userId : userIds) {
+                Notification notification = new Notification(type, title, message, eventId, userId);
+                notificationRepository.save(notification);
+
+                try {
+                    messagingTemplate.convertAndSendToUser(("{\"user\":" + userId + "}"), "/queue/notifications", convertToDTO(notification));
+                    System.out.println("✅ Notificación enviada al usuario " + userId);
+                } catch (Exception e) {
+                    System.err.println("❌ El envío WS para usuario " + userId + " falló: " + e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error enviando notificaciones de evento eliminado: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     @Transactional
     public void sendOrganizerMessageNotification(Long eventId, String customMessage) {
         try {

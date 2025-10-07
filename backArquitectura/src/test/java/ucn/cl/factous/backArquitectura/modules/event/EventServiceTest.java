@@ -180,22 +180,25 @@ class EventServiceTest {
     void shouldDeleteEventSuccessfullyAndSendNotification() {
         Long eventId = 3L;
         Ticket ticket = new Ticket();
+        List<Long> userIds = Arrays.asList(1L, 2L);
         
         when(eventRepository.existsById(eventId)).thenReturn(true);
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(testEvent));
+        when(ticketRepository.findDistinctUserIdsByEventId(eventId)).thenReturn(userIds);
         when(ticketRepository.findByEventId(eventId)).thenReturn(Arrays.asList(ticket));
         doNothing().when(ticketRepository).deleteAll(anyList());
         doNothing().when(eventRepository).deleteById(eventId);
-        doNothing().when(notificationService).sendEventDeletedNotification(eventId);
+        doNothing().when(notificationService).sendEventDeletedNotificationToUsers(eq(eventId), anyString(), eq(userIds));
 
         boolean isDeleted = eventService.deleteEvent(eventId);
 
         assertTrue(isDeleted);
         verify(eventRepository, times(1)).existsById(eventId);
+        verify(ticketRepository, times(1)).findDistinctUserIdsByEventId(eventId);
         verify(ticketRepository, times(1)).findByEventId(eventId);
         verify(ticketRepository, times(1)).deleteAll(anyList());
         verify(eventRepository, times(1)).deleteById(eventId);
-        verify(notificationService, times(1)).sendEventDeletedNotification(eventId);
+        verify(notificationService, times(1)).sendEventDeletedNotificationToUsers(eq(eventId), anyString(), eq(userIds));
     }
 
     @Test

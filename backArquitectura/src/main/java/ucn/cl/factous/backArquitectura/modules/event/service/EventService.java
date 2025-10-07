@@ -93,7 +93,13 @@ public class EventService {
             String eventTitle = eventOptional.map(Event::getEventName).orElse("Evento desconocido");
             System.out.println("📍 Evento encontrado: \"" + eventTitle + "\"");
             
-            // 1. Eliminar tickets asociados
+            // 1. PRIMERO: Obtener los IDs de usuarios afectados ANTES de eliminar tickets
+            List<Long> affectedUserIds = ticketRepository.findDistinctUserIdsByEventId(id);
+            if (!affectedUserIds.isEmpty()) {
+                System.out.println("👥 Usuarios afectados: " + affectedUserIds.size());
+            }
+            
+            // 2. Eliminar tickets asociados
             List<Ticket> tickets = ticketRepository.findByEventId(id);
             if (!tickets.isEmpty()) {
                 System.out.println("🎫 Eliminando " + tickets.size() + " tickets...");
@@ -101,14 +107,15 @@ public class EventService {
                 System.out.println("✅ Tickets eliminados");
             }
             
-            // 2. Eliminar el evento
+            // 3. Eliminar el evento
             eventRepository.deleteById(id);
             System.out.println("✅ Evento eliminado de BD");
             
-            // 3. Enviar notificación WebSocket
-            if (notificationService != null) {
-                System.out.println("📡 Enviando notificación...");
-                notificationService.sendEventDeletedNotification(id);
+            // 4. Enviar notificaciones a los usuarios afectados
+            if (notificationService != null && !affectedUserIds.isEmpty()) {
+                System.out.println("📡 Enviando notificaciones a " + affectedUserIds.size() + " usuarios...");
+                notificationService.sendEventDeletedNotificationToUsers(id, eventTitle, affectedUserIds);
+                System.out.println("✅ Notificaciones enviadas");
             }
             
             System.out.println("🎉 ELIMINACIÓN COMPLETA - ID: " + id);
