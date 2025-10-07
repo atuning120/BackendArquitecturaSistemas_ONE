@@ -256,7 +256,16 @@ public class MercadoPagoController {
             // Crear el ticket usando el servicio existente con la cantidad correcta
             PurchaseTicketDTO purchaseDTO = new PurchaseTicketDTO(eventId, userId, quantity);
             TicketDTO ticket = ticketService.purchaseTicket(purchaseDTO);
-            notificationService.sendPurchaseSuccessNotification(userId, eventId);
+            
+            // Intentar enviar notificación, pero no fallar si hay error
+            try {
+                notificationService.sendPurchaseSuccessNotification(userId, eventId);
+                System.out.println("Notificación enviada exitosamente");
+            } catch (Exception notifError) {
+                System.err.println("Error al enviar notificación (no crítico): " + notifError.getMessage());
+                // Continuamos el flujo aunque falle la notificación
+            }
+            
             System.out.println("Ticket creado exitosamente: " + ticket.getId());
             
             // Redirigir al frontend con éxito

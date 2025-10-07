@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import ucn.cl.factous.backArquitectura.modules.event.repository.EventRepository;
@@ -45,7 +46,7 @@ public class NotificationService {
         }
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = Exception.class)
     public void sendPurchaseSuccessNotification(Long userId, Long eventId) {
         try {
             if (messagingTemplate == null) {
@@ -65,8 +66,9 @@ public class NotificationService {
             // enviar como string un JSON con el dto de usuario
             messagingTemplate.convertAndSendToUser(("{\"user\":" + userId + "}"), "/queue/notifications", convertToDTO(notification));
         } catch (Exception e) {
-            System.err.println("Error enviando notificación general WebSocket: " + e.getMessage());
+            System.err.println("Error enviando notificación de compra exitosa: " + e.getMessage());
             e.printStackTrace();
+            // No re-lanzar la excepción para no afectar el proceso de pago
         }
     }
 
