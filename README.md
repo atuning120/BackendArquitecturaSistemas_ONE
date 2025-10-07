@@ -276,3 +276,5 @@ curl -X POST http://localhost:8080/tickets/validate-qr \
 - **Almacenamiento**: QR en Base64 guardado en base de datos
 - **Validación**: Extracción de datos del QR para verificar autenticidad
 - **Seguridad**: Código de validación único por ticket
+
+- prueba testing
